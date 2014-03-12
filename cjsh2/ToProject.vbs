@@ -1,3 +1,5 @@
+'按键精灵到项目的文件自动复制
+
 '这里设置按键精灵程序主目录
 Dim anjianPath
 anjianPath = "C:\Program Files (x86)\按键精灵9"
