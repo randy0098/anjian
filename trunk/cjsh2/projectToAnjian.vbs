@@ -6,27 +6,28 @@ anjianPath = "C:\Program Files (x86)\按键精灵9"
 Dim fso
 Set fso = CreateObject("Scripting.FileSystemObject")
 
-'复项目目录script下的所有脚本到按键精灵的QMScript目录下
-Call copyFiles("script","QMScript\成吉思汗2")
+'复制按键精灵QMScript\成吉思汗2目录下的所有脚本到项目的script目录下
+Call copyFiles("QMScript\成吉思汗2","script")
 
-'复项目目录lib下的所有脚本到按键精灵的lib目录下
+'复制按键精灵lib目录下的所有脚本到项目目录lib下
 Call copyFiles("lib","lib")
 
 '复制文件夹下的所有文件到指定目录
 Sub copyFiles(srcFldName,desFldName)
 	Dim scriptFolder
-	Set scriptFolder = fso.GetFolder(srcFldName)
-	'msgbox scriptFolder.DateLastModified
-	
-	'目标文件夹如果不存在就创建它
-	If(fso.FolderExists(desFldName)<>True) Then
-		fso.CreateFolder(anjianPath & "\\" & desFldName)
-	End If
-	
+	Set scriptFolder = fso.GetFolder(anjianPath & "\\" & srcFldName)
 	'复制文件夹下的所有文件
 	Dim scriptFiles
 	Set scriptFiles = scriptFolder.Files
 	For Each file in scriptFiles
-		file.Copy(anjianPath & "\\" & desFldName & "\\" & file.name)
+		'复制lib下的文件时只复制文件名中有“cjsh2”前缀的文件
+		If(srcFldName="lib") Then
+			'注意这里的参数，查找是从1开始的而不是从0，要是查不到返回的是0而不是-1！
+			If(InStr(1,file.name,"cjsh2")=1) Then
+				file.Copy(desFldName & "\\" & file.name)
+			End If
+		Else
+			file.Copy(desFldName & "\\" & file.name)
+		End If
 	Next
 End Sub
