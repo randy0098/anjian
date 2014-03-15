@@ -31,37 +31,6 @@ dm_ret = dm.SetPath("I:\Work\anjian\cjsh2\resource")
 dm_ret = dm.setDict(0,"主页面坐标点字库.txt")
 TracePrint dm.Ver()
 
-/*
-hwnd = dm.GetMousePointWindow()
-TracePrint hwnd
-dm_ret = dm.BindWindow(hwnd, "normal", "normal", "normal",0)
-dm.FindPic 0,0,1024,768, "地图树.bmp", "000000", 0.9, 0, intX, intY
-dm.MoveTo intX, intY
-dm_ret = dm.UnBindWindow()
-
-interval = 400
-hwnd = dm.GetMousePointWindow()
-dm_ret = dm.BindWindow(hwnd, "normal", "normal", "normal",0)
-dm.MoveTo 549, 281
-LeftClick 1
-Delay interval
-KeyPress "M",1
-Delay interval
-dm.MoveTo 927, 107
-Delay interval
-dm.MoveTo 927-100, 107
-Delay interval
-While 1 = 1
-	getPointValue
-Wend
-dm_ret = dm.UnBindWindow()
-*/
-
-interval = 500
-//绑定鼠标所在的窗口
-hwnd = dm.GetMousePointWindow()
-dm_ret = dm.BindWindow(hwnd, "normal", "normal", "normal", 0)
-
 //在主界面取小地图坐标点得到当前坐标
 //D8FBFC-060403为数字4的颜色范围
 //E8FDFD-0D0202为数字5的颜色范围
@@ -97,11 +66,34 @@ End Function
 
 Function monitorMoving(targetPoint)
 	Do While 1 = 1
+		//每隔一段时间就扫描是否发现NPC
 		Delay interval
-		currentPoint = getCurrentPoint()
-		TracePrint "monitorMoving"&":"&currentPoint&"-"&targetPoint
-		If currentPoint = targetPoint Then 
+		dm_ret = dm.FindPic(0, 0, 1024, 768, "铁力.bmp", "000000", 0.9, 0, intX, intY)
+		//如果发现NPC就跑过去交任务
+		If intX <> - 1  Then 
+			dm.moveTo intX + 5, intY + 15
+			LeftClick 1
+			Do While 1 = 1
+				Delay interval
+				dm_ret = dm.FindPic(0, 0, 1024, 768, "取消.bmp", "000000", 0.9, 0, x, y)
+				If x <> - 1  Then 
+					dm.moveTo x + 2, y + 2
+					Delay interval
+					LeftClick 1
+					TracePrint "交任务"
+					Exit Do
+				End If
+			Loop
+			//交完任务就往回跑
 			Exit Do
+		//如果没有发现NPC就继续往终点跑
+		Else 
+			currentPoint = getCurrentPoint()
+			TracePrint "monitorMoving" & ":" & currentPoint & "-" & targetPoint
+			//当到达终点时就往回跑
+			If currentPoint = targetPoint Then 
+				Exit Do
+			End If
 		End If
 	Loop
 End Function
@@ -122,26 +114,52 @@ Function moving(targetPoint,offset)
 	dm_ret = monitorMoving(targetPoint)
 End Function
 
+/*
+Function searchNPC()
+	dm_ret = dm.FindPic(0, 0, 1024, 768, "铁力.bmp", "000000", 0.9, 0, intX, intY)
+	If intX <> - 1  Then 
+		dm.moveTo intX + 5, intY + 15
+		LeftClick 1
+		Do While 1 = 1
+			Delay interval
+			dm_ret = dm.FindPic(0, 0, 1024, 768, "取消.bmp", "000000", 0.9, 0, x, y)
+			If x <> - 1  Then 
+				dm.moveTo x + 2, y + 2
+				Delay interval
+				LeftClick 1
+				Exit Do
+			End If
+		Loop
+	End If
+End Function
+*/
+
+//绑定鼠标所在的窗口
+hwnd = dm.GetMousePointWindow()
+dm_ret = dm.BindWindow(hwnd, "normal", "normal", "normal", 0)
+
+interval = 500
 //来回跑的小地图目标坐标点
 Dim targetPoint(2)
-targetPoint(0) = "195,85"
-targetPoint(1) = "143,105"
+targetPoint(0) = "174,39"
+targetPoint(1) = "186,40"
 
 //在大地图上目标坐标点相对窗口的坐标
 Dim offset(2)
-offset(0) = "549,281"
-offset(1) = "403,338"
+offset(0) = "489,154"
+offset(1) = "524,156"
 
 flag = 0
 Do While 1 = 1
+	TracePrint "flag:"&flag
 	dm_ret = moving (targetPoint(flag),offset(flag))
 	If flag = 0 Then 
 		flag = 1
 	Else
 		flag = 0
 	End If
-//	If currentPoint = "195,85" Then 
-//		Exit Do
-//	End If
 Loop
 dm_ret = dm.UnBindWindow()
+
+
+
