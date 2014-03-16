@@ -45,12 +45,12 @@ Function moveToTargetPoint(offset)
 	pointValue = split(offset,",")
 	dm.MoveTo pointValue(0), pointValue(1)
 	Delay interval
-	LeftClick 1
+	dm.LeftClick 1
 End Function
 
 //切换主页面和地图页面
 Function switchPage()
-	KeyPress "M", 1
+	dm.KeyPress "M", 1
 	Delay interval
 	switchMapPage = 1
 End Function
@@ -72,14 +72,14 @@ Function monitorMoving(targetPoint)
 		//如果发现NPC就跑过去交任务
 		If intX <> - 1  Then 
 			dm.moveTo intX + 5, intY + 15
-			LeftClick 1
+			dm.LeftClick 1
 			Do While 1 = 1
 				Delay interval
 				dm_ret = dm.FindPic(0, 0, 1024, 768, "取消.bmp", "000000", 0.9, 0, x, y)
 				If x <> - 1  Then 
 					dm.moveTo x + 2, y + 2
 					Delay interval
-					LeftClick 1
+					dm.LeftClick 1
 					TracePrint "交任务"
 					Exit Do
 				End If
@@ -136,9 +136,23 @@ End Function
 
 //绑定鼠标所在的窗口
 hwnd = dm.GetMousePointWindow()
-dm_ret = dm.BindWindow(hwnd, "normal", "normal", "normal", 0)
+dm_ret = dm.BindWindow(hwnd, "dx", "dx", "normal", 0)
 
-interval = 500
+Delay 1500
+If dm_ret = 0 Then 
+	MessageBox "绑定失败"
+	EndScript
+End If
+
+//dm_ret = dm.Capture(0, 0, 2000, 2000, "screen.bmp")
+//dm.MoveTo 66, 746
+//Delay 500
+//dm.LeftClick
+dm.KeyPress 77
+Delay 2000
+
+/*
+interval = 300
 //来回跑的小地图目标坐标点
 Dim targetPoint(2)
 targetPoint(0) = "174,39"
@@ -159,6 +173,8 @@ Do While 1 = 1
 		flag = 0
 	End If
 Loop
+*/
+
 dm_ret = dm.UnBindWindow()
 
 
