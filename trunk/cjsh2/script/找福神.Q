@@ -1,11 +1,11 @@
 [General]
 SyntaxVersion=2
-BeginHotkey=49
-BeginHotkeyMod=0
+BeginHotkey=81
+BeginHotkeyMod=2
 PauseHotkey=0
 PauseHotkeyMod=0
-StopHotkey=50
-StopHotkeyMod=0
+StopHotkey=87
+StopHotkeyMod=2
 RunOnce=1
 EnableWindow=
 MacroID=c74275b2-6996-416a-b0d0-080aa29c8aab
@@ -44,13 +44,16 @@ End Function
 Function moveToTargetPoint(offset)
 	pointValue = split(offset,",")
 	dm.MoveTo pointValue(0), pointValue(1)
+	TracePrint "移动到地图目标点:"&pointValue(0)&","&pointValue(1)
 	Delay interval
-	dm.LeftClick 1
+	dm.LeftClick 
+	TracePrint "点击移动"
+	Delay interval
 End Function
 
 //切换主页面和地图页面
 Function switchPage()
-	dm.KeyPress "M", 1
+	dm.KeyPress 77
 	Delay interval
 	switchMapPage = 1
 End Function
@@ -64,25 +67,51 @@ Function enablePointChange()
 	Delay interval
 End Function
 
+Function searchNPC
+	
+End Function
+
 Function monitorMoving(targetPoint)
 	Do While 1 = 1
 		//每隔一段时间就扫描是否发现NPC
-		Delay interval
+		Delay 300
 		dm_ret = dm.FindPic(0, 0, 1024, 768, "铁力.bmp", "000000", 0.9, 0, intX, intY)
 		//如果发现NPC就跑过去交任务
 		If intX <> - 1  Then 
-			dm.moveTo intX + 5, intY + 15
-			dm.LeftClick 1
+			TracePrint "发现NPC"
+			//为了避免跑动过程中坐标位置发生变化，这里用回城并取消使角色停止移动
+			//按下6号键回城
+			dm.KeyPress 54
+			TracePrint "按下回城"
+			Delay 500
+			//按ECS取消回城			
+			dm.KeyPress 27
+			TracePrint "取消回城"
+			Delay 300
+			//鼠标移动到NPC
+			dm.moveTo intX + 10, intY + 40
+			TracePrint "鼠标移动到NPC"
+			Delay interval
+			//点击NPC
+			dm.LeftClick 
+			TracePrint "已点击NPC"
+			
 			Do While 1 = 1
-				Delay interval
+				Delay 300
 				dm_ret = dm.FindPic(0, 0, 1024, 768, "取消.bmp", "000000", 0.9, 0, x, y)
+				TracePrint "查找任务窗口"
 				If x <> - 1  Then 
-					dm.moveTo x + 2, y + 2
+					TracePrint "出现任务窗口"
+					dm.moveTo x + 5, y + 3
 					Delay interval
-					dm.LeftClick 1
-					TracePrint "交任务"
+					dm.LeftClick
+					totalTimes = totalTimes + 1
+					TracePrint "交任务："&totalTimes
+					Call Plugin.Msg.ShowScrTXT(0, 0, 1024, 768, "这是第" & totalTimes & "次交任务", "0000FF")
+					//Delay 1000
 					Exit Do
 				End If
+				TracePrint "无任务窗口"
 			Loop
 			//交完任务就往回跑
 			Exit Do
@@ -98,8 +127,6 @@ Function monitorMoving(targetPoint)
 	Loop
 End Function
 
-//在主页面得到当前坐标点
-//currentPoint = getCurrentPoint()
 
 Function moving(targetPoint,offset)
 	//切换到地图页面
@@ -114,29 +141,15 @@ Function moving(targetPoint,offset)
 	dm_ret = monitorMoving(targetPoint)
 End Function
 
-/*
-Function searchNPC()
-	dm_ret = dm.FindPic(0, 0, 1024, 768, "铁力.bmp", "000000", 0.9, 0, intX, intY)
-	If intX <> - 1  Then 
-		dm.moveTo intX + 5, intY + 15
-		LeftClick 1
-		Do While 1 = 1
-			Delay interval
-			dm_ret = dm.FindPic(0, 0, 1024, 768, "取消.bmp", "000000", 0.9, 0, x, y)
-			If x <> - 1  Then 
-				dm.moveTo x + 2, y + 2
-				Delay interval
-				LeftClick 1
-				Exit Do
-			End If
-		Loop
-	End If
-End Function
-*/
 
 //绑定鼠标所在的窗口
 hwnd = dm.GetMousePointWindow()
-dm_ret = dm.BindWindow(hwnd, "dx", "dx", "dx", 0)
+dm_ret = dm.MoveWindow(hwnd,0,0)
+//启用后台模式
+//dx.public.disable.window.size
+dm_ret = dm.BindWindowEx(hwnd, "dx", "dx", "dx", "dx.public.disable.window.size|dx.public.disable.window.position", 0)
+//锁定键盘和鼠标
+//dm.LockInput 1
 
 Delay 1500
 
@@ -145,15 +158,7 @@ If dm_ret = 0 Then
 	EndScript
 End If
 
-//dm_ret = dm.Capture(0, 0, 2000, 2000, "screen.bmp")
-//dm.MoveTo 66, 746
-//Delay 500
-//dm.LeftClick
-dm.KeyPress 77
-Delay 2000
-
-/*
-interval = 300
+interval = 500
 //来回跑的小地图目标坐标点
 Dim targetPoint(2)
 targetPoint(0) = "174,39"
@@ -164,6 +169,8 @@ Dim offset(2)
 offset(0) = "489,154"
 offset(1) = "524,156"
 
+Dim totalTimes
+totalTimes = 1
 flag = 0
 Do While 1 = 1
 	TracePrint "flag:"&flag
@@ -174,8 +181,9 @@ Do While 1 = 1
 		flag = 0
 	End If
 Loop
-*/
 
+//解锁键盘和鼠标
+//dm.LockInput 0
 dm_ret = dm.UnBindWindow()
 
 
