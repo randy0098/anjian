@@ -74,11 +74,12 @@ End Function
 Function monitorMoving(targetPoint)
 	Do While 1 = 1
 		//每隔一段时间就扫描是否发现NPC
-		Delay 300
+		Delay 200
 		dm_ret = dm.FindPic(0, 0, 1024, 768, "铁力.bmp", "000000", 0.9, 0, intX, intY)
 		//如果发现NPC就跑过去交任务
 		If intX <> - 1  Then 
 			TracePrint "发现NPC"
+			//Call Plugin.Msg.ShowScrTXT(0, 0, 1024, 768, "这是第" & totalTimes & "次交任务", "0000FF")
 			//为了避免跑动过程中坐标位置发生变化，这里用回城并取消使角色停止移动
 			//按下6号键回城
 			dm.KeyPress 54
@@ -107,8 +108,8 @@ Function monitorMoving(targetPoint)
 					dm.LeftClick
 					totalTimes = totalTimes + 1
 					TracePrint "交任务："&totalTimes
-					Call Plugin.Msg.ShowScrTXT(0, 0, 1024, 768, "这是第" & totalTimes & "次交任务", "0000FF")
-					//Delay 1000
+					//Call Plugin.Msg.ShowScrTXT(0, 0, 1024, 768, "这是第" & totalTimes & "次交任务", "0000FF")
+					Call Plugin.Msg.Tips("这是第" & totalTimes & "次交任务") 
 					Exit Do
 				End If
 				TracePrint "无任务窗口"
@@ -144,12 +145,13 @@ End Function
 
 //绑定鼠标所在的窗口
 hwnd = dm.GetMousePointWindow()
+//将窗口移动到桌面左上角
 dm_ret = dm.MoveWindow(hwnd,0,0)
 //启用后台模式
 //dx.public.disable.window.size
 dm_ret = dm.BindWindowEx(hwnd, "dx", "dx", "dx", "dx.public.disable.window.size|dx.public.disable.window.position", 0)
-//锁定键盘和鼠标
-//dm.LockInput 1
+//锁定键盘和鼠标，避免影响窗口内容
+dm.LockInput 1
 
 Delay 1500
 
@@ -170,7 +172,7 @@ offset(0) = "489,154"
 offset(1) = "524,156"
 
 Dim totalTimes
-totalTimes = 1
+totalTimes = 0
 flag = 0
 Do While 1 = 1
 	TracePrint "flag:"&flag
@@ -183,8 +185,9 @@ Do While 1 = 1
 Loop
 
 //解锁键盘和鼠标
-//dm.LockInput 0
+dm.LockInput 0
 dm_ret = dm.UnBindWindow()
+
 
 
 
