@@ -80,11 +80,11 @@ Function comparePoint(currentPoint, targetPoint)
 	flagY = false
 	result = false
 	
-	If (currentX - targetX <= 3) OR (currentX - targetX >=-3 ) Then 
+	If (currentX - targetX <= 3) And (currentX - targetX >=-3 ) Then 
 		flagX = true
 	End If
 	
-	If (currentY - targetY <= 3) OR (currentY - targetY >=-3 ) Then 
+	If (currentY - targetY <= 3) And (currentY - targetY >=-3 ) Then 
 		flagY = true
 	End If
 	
@@ -104,15 +104,7 @@ Function monitorMoving(targetPoint)
 		//如果发现NPC就跑过去交任务
 		If intX <> - 1  Then 
 			TracePrint "发现NPC"
-			//Call Plugin.Msg.ShowScrTXT(0, 0, 1024, 768, "这是第" & totalTimes & "次交任务", "0000FF")
-			//为了避免跑动过程中坐标位置发生变化，这里用回城并取消使角色停止移动
-			//按下6号键回城
-			//dm.KeyPress 54
-			//TracePrint "按下回城"
-			//Delay 800
-			//按ECS取消回城			
-			//dm.KeyPress 27
-			//TracePrint "取消回城"
+			//为了避免跑动过程中坐标位置发生变化，这里按下W键来使角色停止移动
 			dm.KeyPress 87
 			TracePrint "按下W"
 			Delay 300
@@ -124,8 +116,14 @@ Function monitorMoving(targetPoint)
 			dm.LeftClick 
 			TracePrint "已点击NPC"
 			
+			Dim n
+			n = 20
 			Do While 1 = 1
-				Delay 300
+				//如果20次都搜不到窗口，窗口可能被别人抢了，就重新开始跑动
+				If n = 20 Then 
+					Exit Do
+				End If
+				Delay 100
 				dm_ret = dm.FindPic(0, 0, 1024, 768, "我找到你了1.bmp", "000000", 0.9, 0, x, y)
 				TracePrint "查找任务窗口"
 				If x <> - 1  Then 
@@ -140,6 +138,7 @@ Function monitorMoving(targetPoint)
 					Exit Do
 				End If
 				TracePrint "无任务窗口"
+				n = n + 1
 			Loop
 			//交完任务就往回跑
 			Exit Do
@@ -178,7 +177,6 @@ dm_ret = dm.MoveWindow(hwnd,0,0)
 //启用后台模式
 //dx.public.disable.window.size
 dm_ret = dm.BindWindowEx(hwnd, "dx", "dx", "dx", "dx.public.disable.window.size|dx.public.disable.window.position", 0)
-//界面UI重置
 
 //锁定键盘和鼠标，避免影响窗口内容
 dm.LockInput 1
@@ -190,7 +188,7 @@ If dm_ret = 0 Then
 	EndScript
 End If
 
-interval = 500
+interval = 300
 
 //来回跑的小地图目标坐标点
 Dim targetPoint(2)
@@ -214,87 +212,7 @@ Do While 1 = 1
 		flag = 0
 	End If
 Loop
-
-
-/*
-Do While 1 = 1
-	//每隔一段时间就扫描是否发现NPC
-	Delay 100
-	dm_ret = dm.FindPic(0, 0, 2000, 2000, "福神1.bmp", "000000", 0.9, 0, intX, intY)
-	//如果发现NPC就跑过去交任务
-	If intX <> - 1  Then 
-		TracePrint "发现NPC"
-		dm.MoveTo intX, intY
-		//EndScript
-		//Call Plugin.Msg.ShowScrTXT(0, 0, 1024, 768, "这是第" & totalTimes & "次交任务", "0000FF")
-		//为了避免跑动过程中坐标位置发生变化，这里用回城并取消使角色停止移动
-		//按下6号键回城
-		dm.KeyPress 54
-		TracePrint "按下回城"
-		Delay 500
-		//按ECS取消回城			
-		dm.KeyPress 27
-		TracePrint "取消回城"
-		Delay 300
-		//鼠标移动到NPC
-		dm.moveTo intX + 10, intY + 40
-		TracePrint "鼠标移动到NPC"
-		Delay interval
-		//点击NPC
-		dm.LeftClick 
-		TracePrint "已点击NPC"
-		
-		Do While 1 = 1
-			Delay 300
-			dm_ret = dm.FindPic(0, 0, 2000, 2000, "我找到你了.bmp", "000000", 0.9, 0, intX, intY)
-			TracePrint "查找任务窗口"
-			If x <> - 1  Then 
-				TracePrint "出现任务窗口"
-				dm.moveTo x + 5, y + 10
-				Delay interval
-				dm.LeftClick
-				totalTimes = totalTimes + 1
-				TracePrint "交任务："&totalTimes
-				//Call Plugin.Msg.ShowScrTXT(0, 0, 1024, 768, "这是第" & totalTimes & "次交任务", "0000FF")
-				Call Plugin.Msg.Tips("这是第" & totalTimes & "次交任务") 
-				Exit Do
-			End If
-			TracePrint "无任务窗口"
-		Loop
-		//交完任务就往回跑
-		Exit Do
-	//如果没有发现NPC就继续往终点跑
-	Else 
-		currentPoint = getCurrentPoint()
-		TracePrint "monitorMoving" & ":" & currentPoint & "-" & targetPoint
-		//当到达终点时就往回跑
-		If currentPoint = targetPoint Then 
-			Exit Do
-		End If
-	TracePrint "没发现NPC"
-	End If
-Loop
-*/
-/*
-		Do While 1 = 1
-			Delay 300
-			dm_ret = dm.FindPic(0, 0, 2000, 2000, "我找到你了1.bmp", "000000", 0.9, 0, x, y)
-			TracePrint "查找任务窗口"
-			If x <> - 1  Then 
-				TracePrint "出现任务窗口"
-				dm.moveTo x + 5, y + 10
-				//EndScript
-				Delay interval
-				dm.LeftClick
-				//totalTimes = totalTimes + 1
-				TracePrint "交任务："&3
-				//Call Plugin.Msg.ShowScrTXT(0, 0, 1024, 768, "这是第" & totalTimes & "次交任务", "0000FF")
-				Call Plugin.Msg.Tips("这是第" & totalTimes & "次交任务") 
-				Exit Do
-			End If
-			TracePrint "无任务窗口"
-		Loop
-*/		
+	
 //解锁键盘和鼠标
 dm.LockInput 0
 dm_ret = dm.UnBindWindow()
