@@ -75,7 +75,7 @@ Function monitorMoving(targetPoint)
 	Do While 1 = 1
 		//每隔一段时间就扫描是否发现NPC
 		Delay 200
-		dm_ret = dm.FindPic(0, 0, 1024, 768, "铁力.bmp", "000000", 0.9, 0, intX, intY)
+		dm_ret = dm.FindPic(0, 0, 1024, 768, "福神.bmp", "000000", 0.9, 0, intX, intY)
 		//如果发现NPC就跑过去交任务
 		If intX <> - 1  Then 
 			TracePrint "发现NPC"
@@ -99,11 +99,11 @@ Function monitorMoving(targetPoint)
 			
 			Do While 1 = 1
 				Delay 300
-				dm_ret = dm.FindPic(0, 0, 1024, 768, "取消.bmp", "000000", 0.9, 0, x, y)
+				dm_ret = dm.FindPic(0, 0, 1024, 768, "我找到你了.bmp", "000000", 0.9, 0, intX, intY)
 				TracePrint "查找任务窗口"
 				If x <> - 1  Then 
 					TracePrint "出现任务窗口"
-					dm.moveTo x + 5, y + 3
+					dm.moveTo x + 5, y + 10
 					Delay interval
 					dm.LeftClick
 					totalTimes = totalTimes + 1
