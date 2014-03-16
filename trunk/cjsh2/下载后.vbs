@@ -2,7 +2,7 @@
 
 '这里设置按键精灵程序主目录
 Dim anjianPath
-anjianPath = "C:\Program Files (x86)\按键精灵9"
+anjianPath = "C:\Work\Program\按键精灵9"
 
 '创建文件对象
 Dim fso
