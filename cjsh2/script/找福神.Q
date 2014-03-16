@@ -136,9 +136,10 @@ End Function
 
 //绑定鼠标所在的窗口
 hwnd = dm.GetMousePointWindow()
-dm_ret = dm.BindWindow(hwnd, "dx", "dx", "normal", 0)
+dm_ret = dm.BindWindow(hwnd, "dx", "dx", "dx", 0)
 
 Delay 1500
+
 If dm_ret = 0 Then 
 	MessageBox "绑定失败"
 	EndScript
