@@ -55,7 +55,6 @@ End Function
 Function switchPage()
 	dm.KeyPress 77
 	Delay interval
-	switchMapPage = 1
 End Function
 
 //因为有时候主页面小地图坐标在人物移动时也不变化（可能是bug）
@@ -80,11 +79,12 @@ Function comparePoint(currentPoint, targetPoint)
 	flagY = false
 	result = false
 	
-	If (currentX - targetX <= 3) And (currentX - targetX >=-3 ) Then 
+	//X,Y坐标允许误差3个像素
+	If Abs(currentX-targetX)<=3 Then 
 		flagX = true
 	End If
 	
-	If (currentY - targetY <= 3) And (currentY - targetY >=-3 ) Then 
+	If Abs(currentY-targetY)<=3 Then 
 		flagY = true
 	End If
 	
@@ -93,10 +93,14 @@ Function comparePoint(currentPoint, targetPoint)
 	End If
 	
 	comparePoint = result
+
 End Function
 
 
 Function monitorMoving(targetPoint)
+	//定义：movingFlag=false时表明结束此函数后，人物要继续往targetPoint跑
+	//movingFlag=true时表明结束此函数后，人物要往targetPoint的下一个点跑
+	movingFlag = false
 	Do While 1 = 1
 		//每隔一段时间就扫描是否发现NPC
 		Delay 100
@@ -107,7 +111,7 @@ Function monitorMoving(targetPoint)
 			//为了避免跑动过程中坐标位置发生变化，这里按下W键来使角色停止移动
 			dm.KeyPress 87
 			TracePrint "按下W"
-			Delay 300
+			Delay interval
 			//鼠标移动到NPC
 			dm.moveTo intX + 10, intY + 40
 			TracePrint "鼠标移动到NPC"
@@ -121,6 +125,7 @@ Function monitorMoving(targetPoint)
 			Do While 1 = 1
 				//如果20次都搜不到窗口，窗口可能被别人抢了，就重新开始跑动
 				If n = 20 Then 
+					TracePrint "搜寻NPC超时了就继续跑动"
 					Exit Do
 				End If
 				Delay 100
@@ -134,25 +139,31 @@ Function monitorMoving(targetPoint)
 					totalTimes = totalTimes + 1
 					TracePrint "交任务："&totalTimes
 					//Call Plugin.Msg.ShowScrTXT(0, 0, 1024, 768, "这是第" & totalTimes & "次交任务", "0000FF")
-					Call Plugin.Msg.Tips("这是第" & totalTimes & "次交任务") 
+					Call Plugin.Msg.Tips("这是第" & totalTimes & "次交任务")
+					//交完任务人物要继续往targetPoint点跑
+					TracePrint "交完任务人物要继续往targetPoint点跑"
 					Exit Do
 				End If
 				TracePrint "无任务窗口"
 				n = n + 1
 			Loop
-			//交完任务就往回跑
+			//交完任务或者搜寻NPC超时了就继续跑动
 			Exit Do
-		//如果没有发现NPC就继续往终点跑
 		Else 
+			//如果没有发现NPC就继续往终点跑
 			currentPoint = getCurrentPoint()
 			TracePrint "monitorMoving" & ":" & currentPoint & "-" & targetPoint
 			//当到达终点时就往回跑
 			result = comparePoint(currentPoint,targetPoint)
 			If result = True Then 
+				//到达终点后要往下一点跑
+				TracePrint "到达终点后要往下一点跑"
+				movingFlag = true
 				Exit Do
 			End If
 		End If
 	Loop
+	monitorMoving = movingFlag
 End Function
 
 
@@ -166,7 +177,8 @@ Function moving(targetPoint,offset)
 	//触发小地图坐标的变化
 	dm_ret = enablePointChange()
 	//监控人物移动
-	dm_ret = monitorMoving(targetPoint)
+	movingFlag = monitorMoving(targetPoint)
+	moving = movingFlag
 End Function
 
 
@@ -191,32 +203,57 @@ End If
 interval = 300
 
 //来回跑的小地图目标坐标点
-Dim targetPoint(2)
+Dim targetPoint(4)
 targetPoint(0) = "103,104"
-targetPoint(1) = "147,103"
+targetPoint(1) = "128,90"
+targetPoint(2) = "147,103"
+targetPoint(3) = "122,97"
 
 //在大地图上目标坐标点相对窗口的坐标
-Dim offset(2)
+Dim offset(4)
 offset(0) = "293,334"
-offset(1) = "421,331"
+offset(1) = "363,290"
+offset(2) = "421,331"
+offset(3) = "347,311"
 
 Dim totalTimes
 totalTimes = 0
-flag = 0
+	
+Dim i
+i = 0
 Do While 1 = 1
-	TracePrint "flag:"&flag
-	dm_ret = moving (targetPoint(flag),offset(flag))
-	If flag = 0 Then 
-		flag = 1
+	TracePrint "i:"&i
+	movingFlag = moving(targetPoint(i), offset(i))
+	If movingFlag = True Then 
+		i = i + 1
+		If i = UBound(targetPoint) Then 
+			i = 0
+		End If
 	Else
-		flag = 0
+		i = i
 	End If
 Loop
-	
+
 //解锁键盘和鼠标
 dm.LockInput 0
 dm_ret = dm.UnBindWindow()
 
 
+/*
+Dim array(4)
+array(0) = 0
+array(1) = 1
+array(2) = 2
+array(3) = 3
 
+Dim i
+i = 0
+Do While 1 = 1
+	TracePrint i & ":" & array(i)
+	i = i + 1
+	If i = UBound(array) Then 
+		i = 0
+	End If
+Loop
+*/
 
