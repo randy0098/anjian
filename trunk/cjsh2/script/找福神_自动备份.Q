@@ -1,14 +1,14 @@
 [General]
 SyntaxVersion=2
 BeginHotkey=49
-BeginHotkeyMod=0
+BeginHotkeyMod=2
 PauseHotkey=0
 PauseHotkeyMod=0
 StopHotkey=50
-StopHotkeyMod=0
+StopHotkeyMod=2
 RunOnce=1
 EnableWindow=
-MacroID=c74275b2-6996-416a-b0d0-080aa29c8aab
+MacroID=63ea12e4-9606-4be4-a362-252f33baae50
 Description=找福神_自动备份
 Enable=1
 AutoRun=0
