@@ -28,7 +28,7 @@ PutAttachment ".\Plugin" ,"RegDll.dll"
 Call Plugin.RegDll.Reg("C:\Work\Anjian\anjian\cjsh2\resource\dm.dll")
 Set dm = createobject("dm.dmsoft")
 dm_ret = dm.SetPath("C:\Work\Anjian\anjian\cjsh2\resource")
-dm_ret = dm.setDict(0,"主页面坐标点字库.txt")
+dm_ret = dm.setDict(0,"mainPageFont.txt")
 TracePrint dm.Ver()
 
 //在主界面取小地图坐标点得到当前坐标
@@ -104,7 +104,7 @@ Function monitorMoving(targetPoint)
 	Do While 1 = 1
 		//每隔一段时间就扫描是否发现NPC
 		Delay 100
-		dm_ret = dm.FindPic(0, 0, 1024, 768, "福神1.bmp", "000000", 0.9, 0, intX, intY)
+		dm_ret = dm.FindPic(0, 0, 1024, 768, "fushen.bmp", "000000", 0.9, 0, intX, intY)
 		//如果发现NPC就跑过去交任务
 		If intX <> - 1  Then 
 			TracePrint "发现NPC"
@@ -129,7 +129,7 @@ Function monitorMoving(targetPoint)
 					Exit Do
 				End If
 				Delay 100
-				dm_ret = dm.FindPic(0, 0, 1024, 768, "我找到你了1.bmp", "000000", 0.9, 0, x, y)
+				dm_ret = dm.FindPic(0, 0, 1024, 768, "findYou.bmp", "000000", 0.9, 0, x, y)
 				TracePrint "查找任务窗口"
 				If x <> - 1  Then 
 					TracePrint "出现任务窗口"
