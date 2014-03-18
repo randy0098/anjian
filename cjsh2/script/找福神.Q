@@ -183,6 +183,7 @@ End Function
 
 
 //绑定鼠标所在的窗口
+//LogStart "C:\anjian.log"
 hwnd = dm.GetMousePointWindow()
 //将窗口移动到桌面左上角
 dm_ret = dm.MoveWindow(hwnd,0,0)
@@ -203,18 +204,16 @@ End If
 interval = 300
 
 //来回跑的小地图目标坐标点
-Dim targetPoint(4)
+Dim targetPoint(2)
 targetPoint(0) = "103,104"
-targetPoint(1) = "128,90"
-targetPoint(2) = "147,103"
-targetPoint(3) = "122,97"
+targetPoint(1) = "147,103"
+
 
 //在大地图上目标坐标点相对窗口的坐标
-Dim offset(4)
+Dim offset(2)
 offset(0) = "293,334"
-offset(1) = "363,290"
-offset(2) = "421,331"
-offset(3) = "347,311"
+offset(1) = "421,331"
+
 
 Dim totalTimes
 totalTimes = 0
@@ -234,26 +233,9 @@ Do While 1 = 1
 	End If
 Loop
 
+//LogStop
 //解锁键盘和鼠标
 dm.LockInput 0
 dm_ret = dm.UnBindWindow()
 
-
-/*
-Dim array(4)
-array(0) = 0
-array(1) = 1
-array(2) = 2
-array(3) = 3
-
-Dim i
-i = 0
-Do While 1 = 1
-	TracePrint i & ":" & array(i)
-	i = i + 1
-	If i = UBound(array) Then 
-		i = 0
-	End If
-Loop
-*/
 
