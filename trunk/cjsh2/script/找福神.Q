@@ -23,11 +23,11 @@ SetupOCXFile=
 [Comment]
 
 [Script]
-PutAttachment "C:\Work\Anjian\anjian\cjsh2\resource" ,"*.*"
+PutAttachment "I:\Work\anjian\cjsh2\resource" ,"*.*"
 PutAttachment ".\Plugin" ,"RegDll.dll"
-Call Plugin.RegDll.Reg("C:\Work\Anjian\anjian\cjsh2\resource\dm.dll")
+Call Plugin.RegDll.Reg("I:\Work\anjian\cjsh2\resource\dm.dll")
 Set dm = createobject("dm.dmsoft")
-dm_ret = dm.SetPath("C:\Work\Anjian\anjian\cjsh2\resource")
+dm_ret = dm.SetPath("I:\Work\anjian\cjsh2\resource")
 dm_ret = dm.setDict(0,"mainPageFont.txt")
 TracePrint dm.Ver()
 
@@ -80,11 +80,11 @@ Function comparePoint(currentPoint, targetPoint)
 	result = false
 	
 	//X,Y坐标允许误差3个像素
-	If Abs(currentX-targetX)<=3 Then 
+	If Abs(currentX-targetX)<=5 Then 
 		flagX = true
 	End If
 	
-	If Abs(currentY-targetY)<=3 Then 
+	If Abs(currentY-targetY)<=5 Then
 		flagY = true
 	End If
 	
@@ -98,6 +98,7 @@ End Function
 
 
 Function monitorMoving(targetPoint)
+	n1 = 0
 	//定义：movingFlag=false时表明结束此函数后，人物要继续往targetPoint跑
 	//movingFlag=true时表明结束此函数后，人物要往targetPoint的下一个点跑
 	movingFlag = false
@@ -121,7 +122,7 @@ Function monitorMoving(targetPoint)
 			TracePrint "已点击NPC"
 			
 			Dim n
-			n = 20
+			n = 0
 			Do While 1 = 1
 				//如果20次都搜不到窗口，窗口可能被别人抢了，就重新开始跑动
 				If n = 20 Then 
@@ -149,7 +150,7 @@ Function monitorMoving(targetPoint)
 			Loop
 			//交完任务或者搜寻NPC超时了就继续跑动
 			Exit Do
-		Else 
+		Else 	
 			//如果没有发现NPC就继续往终点跑
 			currentPoint = getCurrentPoint()
 			TracePrint "monitorMoving" & ":" & currentPoint & "-" & targetPoint
@@ -160,6 +161,14 @@ Function monitorMoving(targetPoint)
 				TracePrint "到达终点后要往下一点跑"
 				movingFlag = true
 				Exit Do
+			Else 
+				TracePrint "n1:"&n1
+				//如果10秒都没跑到目标点，有可能已经停止跑动了，这时就重新开始往下一点跑
+				If n1 = 50 Then 
+					movingFlag = true
+					Exit Do
+				End If
+				n1 = n1+1
 			End If
 		End If
 	Loop
@@ -201,19 +210,21 @@ If dm_ret = 0 Then
 	EndScript
 End If
 
-interval = 300
+interval = 200
 
 //来回跑的小地图目标坐标点
 Dim targetPoint(2)
-targetPoint(0) = "103,104"
-targetPoint(1) = "147,103"
-
+targetPoint(0) = "99,104"
+targetPoint(1) = "155,104"
+//targetPoint(2) = "150,158"
+//targetPoint(3) = "100,157"
 
 //在大地图上目标坐标点相对窗口的坐标
 Dim offset(2)
-offset(0) = "293,334"
-offset(1) = "421,331"
-
+offset(0) = "287,339"
+offset(1) = "445,340"
+//offset(2) = "430,490"
+//offset(3) = "293,492"
 
 Dim totalTimes
 totalTimes = 0

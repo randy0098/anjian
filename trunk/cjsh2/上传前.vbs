@@ -2,7 +2,7 @@
 
 '这里设置按键精灵程序主目录
 Dim anjianPath
-anjianPath = "C:\Work\Program\按键精灵9"
+anjianPath = "C:\Program Files (x86)\按键精灵9"
 
 Dim value
 value = MsgBox ("此操作会覆盖SVN文件!", 49, "注意：")
