@@ -23,11 +23,11 @@ SetupOCXFile=
 [Comment]
 
 [Script]
-PutAttachment "I:\Work\anjian\cjsh2\resource" ,"*.*"
+PutAttachment "C:\Work\Anjian\anjian\cjsh2\resource" ,"*.*"
 PutAttachment ".\Plugin" ,"RegDll.dll"
-Call Plugin.RegDll.Reg("I:\Work\anjian\cjsh2\resource\dm.dll")
+Call Plugin.RegDll.Reg("C:\Work\Anjian\anjian\cjsh2\resource\dm.dll")
 Set dm = createobject("dm.dmsoft")
-dm_ret = dm.SetPath("I:\Work\anjian\cjsh2\resource")
+dm_ret = dm.SetPath("C:\Work\Anjian\anjian\cjsh2\resource")
 dm_ret = dm.setDict(0,"mainPageFont.txt")
 TracePrint dm.Ver()
 
@@ -79,12 +79,12 @@ Function comparePoint(currentPoint, targetPoint)
 	flagY = false
 	result = false
 	
-	//X,Y坐标允许误差3个像素
-	If Abs(currentX-targetX)<=5 Then 
+	//X,Y坐标允许误差4个坐标点
+	If Abs(currentX-targetX)<=4 Then 
 		flagX = true
 	End If
 	
-	If Abs(currentY-targetY)<=5 Then
+	If Abs(currentY-targetY)<=4 Then
 		flagY = true
 	End If
 	
@@ -163,7 +163,7 @@ Function monitorMoving(targetPoint)
 				Exit Do
 			Else 
 				TracePrint "n1:"&n1
-				//如果10秒都没跑到目标点，有可能已经停止跑动了，这时就重新开始往下一点跑
+				//如果5秒都没跑到目标点，有可能已经停止跑动了，这时就重新开始往下一点跑
 				If n1 = 50 Then 
 					movingFlag = true
 					Exit Do
@@ -190,6 +190,15 @@ Function moving(targetPoint,offset)
 	moving = movingFlag
 End Function
 
+//由地图X坐标得到相对窗口坐标
+Function getXPosition(xPoint)
+	getXPosition = round(2.736*xPoint+12,0)
+End Function
+
+//由地图Y坐标得到相对窗口坐标
+Function getYPosition(yPoint)
+	getYPosition = round(2.818*yPoint+41,0)
+End Function
 
 //绑定鼠标所在的窗口
 //LogStart "C:\anjian.log"
@@ -221,10 +230,13 @@ targetPoint(1) = "155,104"
 
 //在大地图上目标坐标点相对窗口的坐标
 Dim offset(2)
-offset(0) = "287,339"
-offset(1) = "445,340"
+//offset(0) = "287,339"
+//offset(1) = "445,340"
 //offset(2) = "430,490"
 //offset(3) = "293,492"
+
+offset(0) = getXPosition(split(targetPoint(0),",")(0))&","&getYPosition(split(targetPoint(0),",")(1))
+offset(1) = getXPosition(split(targetPoint(1),",")(0))&","&getYPosition(split(targetPoint(1),",")(1))
 
 Dim totalTimes
 totalTimes = 0
